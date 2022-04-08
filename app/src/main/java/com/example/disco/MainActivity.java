@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     //https://developer.spotify.com/dashboard/applications
     //All other spotify code and packages SHOULD BE (I think/hope) installed and in the right place
     //Dependencies in build.gradle
-    private static final String CLIENT_ID = "aa2cd2710e10420a8dc0b8b4e1dd5ec8";
+    private static final String CLIENT_ID = "c6b8e2f8fb0e4ed8b2f03b863c28d07e";
     private static final String REDIRECT_URI = "com.example.disco://callback";
     //Can't get authorization to work, which has to do with my dashboard and these 2 lines
     //but I cannot figure out how to get it to work
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("MainActivity", "Connected! Yay!");
 
                         // Now you can start interacting with App Remote
-                        connected();
+                        //connected();
 
                     }
 
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
-
+    /*
     private void connected() {
         // Play a playlist
         mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
@@ -85,4 +85,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+    */
+
 }
