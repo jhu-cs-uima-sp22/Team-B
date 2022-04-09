@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -18,7 +19,7 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/coverImage"
         android:layout_width="320dp"
         android:layout_height="320dp"
         android:background="#9C27B0"
@@ -67,7 +68,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textSongTitle"
+                android:id="@+id/songTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="5dp"
@@ -82,7 +83,7 @@
             </TextView>
 
             <TextView
-                android:id="@+id/textSongDescription"
+                android:id="@+id/songArtist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="5dp"
