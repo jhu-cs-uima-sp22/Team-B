@@ -2,6 +2,7 @@ package com.example.disco;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -86,5 +87,9 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
     */
+    public void go(android.view.View view) {
+        Intent intent = new Intent(this, SingleSongRow.class);
+        startActivity(intent);
+    }
 
 }
