@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-
             }
 
             @Override
@@ -91,24 +90,19 @@ public class MainActivity extends AppCompatActivity {
                         .showAuthView(true)
                         .build();
 
-        SpotifyAppRemote.connect(this, connectionParams,
-                new Connector.ConnectionListener() {
+        SpotifyAppRemote.connect(this, connectionParams,new Connector.ConnectionListener() {
+            public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                mSpotifyAppRemote = spotifyAppRemote;
 
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        Log.d("MainActivity", "Connected! Yay!");
+                // Now you can start interacting with App Remote
+                connected();
 
-                        // Now you can start interacting with App Remote
-                        connected();
+            }
 
-                    }
-
-                    public void onFailure(Throwable throwable) {
-                        Log.e("MyActivity", throwable.getMessage(), throwable);
-
-                        // Something went wrong when attempting to connect! Handle errors here
-                    }
-                });
+            public void onFailure(Throwable throwable) {
+                // Something went wrong when attempting to connect! Handle errors here
+            }
+        });
     }
 
     @Override
@@ -117,7 +111,10 @@ public class MainActivity extends AppCompatActivity {
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
 
-
+    /**
+     * Get the current song playing
+     * @param pos position of the song
+     */
     private void getCurrentSong(int pos) {
         mSpotifyAppRemote.getPlayerApi().getPlayerState()
                 .setResultCallback(playerState -> {
@@ -133,8 +130,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Get the song from Spotify at the specific position
+     * @param pos Position of the song
+     */
     private void getSongAt(int pos) {
-        Log.d("MainActivity", vp2a.getItemCount() + "");
         mSpotifyAppRemote.getPlayerApi().skipToIndex(PLAYLIST_URI, pos)
                 .setResultCallback(empty -> {
                     getCurrentSong(pos);
@@ -168,6 +168,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * Pause/Resume a song
+     * @param view
+     */
     public void togglePause(View view) {
         if (!isPaused) {
             mSpotifyAppRemote.getPlayerApi().pause();

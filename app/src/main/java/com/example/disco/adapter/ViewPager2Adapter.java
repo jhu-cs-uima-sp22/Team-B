@@ -23,6 +23,8 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
     private Context ctx;
     private int numSongs;
     private final int NUM_SONGS = 10;
+
+    
     public ViewPager2Adapter(Context ctx) {
         this.ctx = ctx;
         this.songs = new SongModel[NUM_SONGS];
