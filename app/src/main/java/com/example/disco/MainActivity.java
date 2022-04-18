@@ -1,15 +1,19 @@
 package com.example.disco;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.example.disco.adapter.ViewPager2Adapter;
 import com.example.disco.model.SongModel;
@@ -43,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String REDIRECT_URI = "com.example.disco://callback";
     //Can't get authorization to work, which has to do with my dashboard and these 2 lines
     //but I cannot figure out how to get it to work
-    private static final String PLAYLIST_URI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL";
-    private static final int NUM_SONGS = 10;
+    private static final String PLAYLIST_URI = "spotify:playlist:1JFH215e5EWgrIK87TJGs5"; //"spotify:playlist:37i9dQZF1DX2sUQwD7tbmL";
+    private static final int NUM_SONGS = 2;
 
     private SpotifyAppRemote mSpotifyAppRemote;
 
@@ -163,25 +167,20 @@ public class MainActivity extends AppCompatActivity {
         playlistStarted = true;
     }
 
-    public void go(View view) {
-        Intent intent = new Intent(this, SingleSongRow.class);
-        startActivity(intent);
-    }
-
     /**
      * Pause/Resume a song
      * @param view
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void togglePause(View view) {
+        Context context = getApplicationContext();
         if (!isPaused) {
             mSpotifyAppRemote.getPlayerApi().pause();
-            String s = "resume";
-            ((Button) view).setText(s);
+            ((ImageButton) view).setForeground(ContextCompat.getDrawable(context, R.drawable.play));
             isPaused = true;
         } else {
             mSpotifyAppRemote.getPlayerApi().resume();
-            String s = "pause";
-            ((Button) view).setText(s);
+            ((ImageButton) view).setForeground(ContextCompat.getDrawable(context, R.drawable.pause));
             isPaused = false;
         }
     }

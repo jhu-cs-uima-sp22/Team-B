@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:foreground="?attr/actionModeShareDrawable">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -97,19 +97,20 @@
             </TextView>
         </LinearLayout>
 
-        <Button
+        <ImageButton
             android:id="@+id/infoButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:foreground="@android:drawable/ic_dialog_info" />
+            android:background="@drawable/round_button"
+            android:foreground="@drawable/info" />
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/bottomLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:orientation="horizontal"
@@ -120,26 +121,43 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.873">
 
-        <Button
+
+        <ImageButton
             android:id="@+id/shareButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="@drawable/round_button"
+            android:foreground="@drawable/share" />
 
-        <Button
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <ImageButton
             android:id="@+id/pauseButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:foreground="@android:drawable/ic_media_pause"
-            android:onClick="togglePause"
-            app:icon="@android:drawable/ic_media_pause" />
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_button"
+            android:foreground="@drawable/pause"
+            android:onClick="togglePause" />
 
-        <Button
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <ImageButton
             android:id="@+id/likeButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="heart" />
+            android:background="@drawable/round_button"
+            android:foreground="@drawable/heart_outline" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

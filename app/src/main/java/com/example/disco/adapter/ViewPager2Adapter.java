@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.ViewHolder> {
-    // TODO: this is just an example, should be populated by spotify algorithm
     private SongModel[] songs;
     private Context ctx;
     private int numSongs;
