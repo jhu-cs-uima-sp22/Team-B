@@ -51,12 +51,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.173">
 
-        <Button
+        <ImageButton
             android:id="@+id/likedSongsButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="&#60;3" />
+            android:background="@drawable/round_button"
+            android:foreground="@drawable/striped_heart" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -77,7 +78,12 @@
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="25sp"
-                android:textStyle="bold">
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:focusable="false"
+                android:scrollHorizontally="true">
 
             </TextView>
 
@@ -92,7 +98,12 @@
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                android:textStyle="bold">
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:focusable="false"
+                android:scrollHorizontally="true">
 
             </TextView>
         </LinearLayout>
@@ -110,7 +121,7 @@
     <LinearLayout
         android:id="@+id/bottomLayout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:orientation="horizontal"

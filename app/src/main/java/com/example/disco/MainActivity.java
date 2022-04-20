@@ -47,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String REDIRECT_URI = "com.example.disco://callback";
     //Can't get authorization to work, which has to do with my dashboard and these 2 lines
     //but I cannot figure out how to get it to work
-    private static final String PLAYLIST_URI = "spotify:playlist:1JFH215e5EWgrIK87TJGs5"; //"spotify:playlist:37i9dQZF1DX2sUQwD7tbmL";
-    private static final int NUM_SONGS = 2;
+    private static final String PLAYLIST_URI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL";
+    private static final int NUM_SONGS = 10;
 
     private SpotifyAppRemote mSpotifyAppRemote;
 

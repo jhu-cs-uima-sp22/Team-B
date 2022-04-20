@@ -67,7 +67,9 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.songTitle);
+            title.setSelected(true);
             artist = itemView.findViewById(R.id.songArtist);
+            artist.setSelected(true);
             albumArt = itemView.findViewById(R.id.coverImage);
         }
     }
