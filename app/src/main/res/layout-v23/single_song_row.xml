@@ -139,7 +139,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/round_button"
-            android:foreground="@drawable/share" />
+            android:foreground="@drawable/share"
+            android:onClick="shareClicked"/>
 
         <TextView
             android:id="@+id/textView"

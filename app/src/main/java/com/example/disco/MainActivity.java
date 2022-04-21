@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.disco.adapter.ViewPager2Adapter;
 import com.example.disco.model.SongModel;
@@ -183,6 +184,22 @@ public class MainActivity extends AppCompatActivity {
             ((ImageButton) view).setForeground(ContextCompat.getDrawable(context, R.drawable.pause));
             isPaused = false;
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void shareClicked(View view) {
+
+
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        //TODO: GET THE SONG LINK
+        //I see there's a getsongurl function in SongModel but have no idea how it works.
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "THE SPOTIFY SONG URL HERE");
+        sendIntent.setType("text/plain");
+        Intent.createChooser(sendIntent,"Share via...");
+        startActivity(sendIntent);
+
     }
 
 }
