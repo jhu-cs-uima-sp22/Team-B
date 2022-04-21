@@ -191,14 +191,16 @@ public class MainActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void shareClicked(View view) {
-
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "THE SPOTIFY SONG LINK");
-        sendIntent.setType("text/plain");
-        Intent.createChooser(sendIntent,"Share via...");
-        startActivity(sendIntent);
-
+        mSpotifyAppRemote.getPlayerApi().getPlayerState()
+                .setResultCallback(playerState -> {
+                   String songLink = "open.spotify.com/track/" + playerState.track.uri.substring(14);
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, songLink);
+                    sendIntent.setType("text/plain");
+                    Intent.createChooser(sendIntent,"Share via...");
+                    startActivity(sendIntent);
+                });
     }
 
 }
