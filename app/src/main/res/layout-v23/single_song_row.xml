@@ -132,16 +132,61 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.873">
 
-
-        <ImageButton
-            android:id="@+id/shareButton"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/round_button"
-            android:foreground="@drawable/share" />
+            android:padding="10dp"
 
-        <TextView
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="2"
+            android:background="@drawable/round_button">
+
+            <ImageButton
+                android:id="@+id/shareButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/share"
+                android:onClick="shareClicked" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/round_button"
+            android:padding="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="2">
+
+            <ImageButton
+                android:id="@+id/pauseButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/pause"
+                android:onClick="togglePause" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="2"
+            android:background="@drawable/round_button">
+
+            <ImageButton
+                android:id="@+id/likeButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/heart_outline"
+                android:onClick="shareClicked" />
+        </LinearLayout>
+
+
+        <!--TextView
             android:id="@+id/textView"
             android:layout_width="10dp"
             android:layout_height="match_parent"
@@ -168,7 +213,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/round_button"
-            android:foreground="@drawable/heart_outline" />
+            android:foreground="@drawable/heart_outline" /-->
+
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

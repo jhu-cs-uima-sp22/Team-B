@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.disco.adapter.ViewPager2Adapter;
 import com.example.disco.model.SongModel;
@@ -176,13 +177,30 @@ public class MainActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         if (!isPaused) {
             mSpotifyAppRemote.getPlayerApi().pause();
-            ((ImageButton) view).setForeground(ContextCompat.getDrawable(context, R.drawable.play));
+            view.setBackground(ContextCompat.getDrawable(context, R.drawable.play));
+            // ((ImageButton) view).setForeground(ContextCompat.getDrawable(context, R.drawable.play));
             isPaused = true;
         } else {
             mSpotifyAppRemote.getPlayerApi().resume();
-            ((ImageButton) view).setForeground(ContextCompat.getDrawable(context, R.drawable.pause));
+            view.setBackground(ContextCompat.getDrawable(context, R.drawable.pause));
+            // ((ImageButton) view).setForeground(ContextCompat.getDrawable(context, R.drawable.pause));
             isPaused = false;
         }
+    }
+
+    public void shareClicked(View view) {
+        Context context = getApplicationContext();
+        Log.d("MainActivity", "CLICKED");
+        Toast.makeText(MainActivity.this, "Button clicked", Toast.LENGTH_SHORT).show();
+
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "THE SPOTIFY SONG LINK");
+        sendIntent.setType("text/plain");
+        Intent.createChooser(sendIntent,"Share via...");
+        startActivity(sendIntent);
+
     }
 
 }
