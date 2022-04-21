@@ -188,11 +188,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void shareClicked(View view) {
-        Context context = getApplicationContext();
-        Log.d("MainActivity", "CLICKED");
-        Toast.makeText(MainActivity.this, "Button clicked", Toast.LENGTH_SHORT).show();
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void shareClicked(View view) {
 
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);

@@ -158,7 +158,6 @@
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_weight="2">
-
             <ImageButton
                 android:id="@+id/pauseButton"
                 android:layout_width="match_parent"
@@ -184,36 +183,6 @@
                 android:background="@drawable/heart_outline"
                 android:onClick="shareClicked" />
         </LinearLayout>
-
-
-        <!--TextView
-            android:id="@+id/textView"
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-        <ImageButton
-            android:id="@+id/pauseButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/round_button"
-            android:foreground="@drawable/pause"
-            android:onClick="togglePause" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-        <ImageButton
-            android:id="@+id/likeButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/round_button"
-            android:foreground="@drawable/heart_outline" /-->
 
 
     </LinearLayout>
