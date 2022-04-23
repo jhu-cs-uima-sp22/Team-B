@@ -7,6 +7,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -16,6 +18,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.disco.adapter.SongDBAdapter;
 import com.example.disco.adapter.ViewPager2Adapter;
 import com.example.disco.model.SongModel;
 import com.spotify.android.appremote.api.ConnectionParams;
@@ -36,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     // this is the swiping class
     private ViewPager2 viewPager2;
     private ViewPager2Adapter vp2a;
+    private SQLiteDatabase dbrefW;
+    private SQLiteDatabase dbrefR;
     private boolean isPaused = false;
     private boolean playlistStarted = false;
 
@@ -57,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SongDBAdapter sdba = new SongDBAdapter(this);
+        dbrefW = sdba.getWritableDatabase();
+        dbrefR = sdba.getReadableDatabase();
         viewPager2 = findViewById(R.id.viewpager);
         ViewPager2Adapter viewPager2Adapter = new ViewPager2Adapter(this);
         vp2a = viewPager2Adapter;
@@ -71,9 +79,6 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
                 if (playlistStarted) {
-                    if (vp2a.getItemCount() < NUM_SONGS) {
-                        //getNextSong();
-                    }
                     mSpotifyAppRemote.getPlayerApi().skipToIndex(PLAYLIST_URI, position);
                     isPaused = false;
                 }
@@ -159,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 .setEventCallback(playerState -> {
                     final Track track = playerState.track;
                     if (track != null) {
-                        Log.d("MainActivity", track.name + " by " + track.artist.name);
+                        //Log.d("MainActivity", track.name + " by " + track.artist.name);
                     }
                 });
         for (int i = 0; i < NUM_SONGS; i++) {
@@ -196,11 +201,37 @@ public class MainActivity extends AppCompatActivity {
                    String songLink = "open.spotify.com/track/" + playerState.track.uri.substring(14);
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, songLink);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this cool song I found on Disco, " +
+                            "the music discovery app! " + songLink);
                     sendIntent.setType("text/plain");
                     Intent.createChooser(sendIntent,"Share via...");
+                    Log.d("MainActivity", getLikedSongAt(0).songTitle);
                     startActivity(sendIntent);
                 });
     }
 
+    public SongModel getLikedSongAt(int pos) {
+        Cursor cursor = dbrefR.query("LikedSongs", null, null, null, null, null , null);
+        int i = 0;
+        while(cursor.moveToNext()) {
+            if (i == pos) {
+                return new SongModel(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+            }
+        }
+        return new SongModel("", "");
+    }
+
+    private int numLikedSongs = 0;
+    public void likeSong(View view) {
+        mSpotifyAppRemote.getPlayerApi().getPlayerState()
+                .setResultCallback(playerState -> {
+                    Track track = playerState.track;
+                    dbrefW.execSQL("INSERT INTO LikedSongs " +
+                            "(id, songName, songArtist, songAlbum, songURL, songAlbumURI)" +
+                            "VALUES (" + numLikedSongs + ",\"" + track.name + "\",\"" + track.artist.name
+                            + "\",\"" + track.album.name + "\",\"" + track.uri + "\",\"" + track.imageUri.raw + "\")"
+                    );
+                    numLikedSongs++;
+                });
+    }
 }
