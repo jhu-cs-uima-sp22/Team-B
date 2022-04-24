@@ -1,21 +1,21 @@
 package com.example.disco.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.disco.MainActivity;
 import com.example.disco.R;
 import com.example.disco.model.SongModel;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.ViewHolder> {
     private SongModel[] songs;
@@ -31,8 +31,13 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
     }
 
     public void addSong(SongModel song, int pos) {
-            songs[pos] = song;
-            numSongs++;
+        songs[pos] = song;
+        numSongs++;
+    }
+
+    public void clearSongs() {
+        this.songs = new SongModel[NUM_SONGS];
+        this.numSongs = 0;
     }
 
     public void setSongs(SongModel[] songs) { this.songs = songs; }
