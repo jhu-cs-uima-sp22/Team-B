@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.disco.adapter.SongDBAdapter;
 import com.example.disco.adapter.ViewPager2Adapter;
@@ -334,6 +335,7 @@ public class MainActivity extends AppCompatActivity {
                     if (hasLikedSong(track.uri)) {
                         //Unlike - remove song from DB
                         dbrefW.execSQL("DELETE FROM LikedSongs WHERE songURL=\"" + track.uri + "\"");
+                        Toast.makeText(this, "Removed from your liked songs.", Toast.LENGTH_SHORT).show();
                     } else {
                         //Like - add song to DB
                         dbrefW.execSQL("INSERT INTO LikedSongs " +
@@ -341,6 +343,7 @@ public class MainActivity extends AppCompatActivity {
                                 "VALUES (\"" + track.name + "\",\"" + track.artist.name
                                 + "\",\"" + track.album.name + "\",\"" + track.uri + "\",\"" + track.imageUri.raw + "\")"
                         );
+                        Toast.makeText(this, "Added to your liked songs!", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
