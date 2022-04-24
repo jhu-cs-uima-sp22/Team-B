@@ -213,10 +213,6 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void createFeed() {
-        dbrefW.execSQL("CREATE TABLE Feed (SongID varchar(255), )");
-    }
-
     public SongModel getLikedSongAt(int pos) {
         Cursor cursor = dbrefR.query("LikedSongs", null, null, null, null, null , null);
         int i = 0;
