@@ -5,10 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class SongDBAdapter extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "LikedSongs.db";
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE LikedSongs ( " +
-            "id INTEGER NOT NULL UNIQUE," +
             "songName VARCHAR(256) NOT NULL," +
             "songArtist VARCHAR(256) NOT NULL," +
             "songAlbum VARCHAR(256)," +

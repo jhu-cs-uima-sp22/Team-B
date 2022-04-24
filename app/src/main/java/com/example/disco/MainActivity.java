@@ -148,13 +148,11 @@ public class MainActivity extends AppCompatActivity {
         viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.d("MainActivity", "WHAT IS HAPPENING");
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
 
             @Override
             public void onPageSelected(int position) {
-                Log.d("MainActivity", "PAGE SELECTED!");
                 super.onPageSelected(position);
                 if (playlistStarted) {
                     mSpotifyAppRemote.getPlayerApi().skipToIndex(PLAYLIST_URI, position);
@@ -176,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
                 .setEventCallback(playerState -> {
                     final Track track = playerState.track;
                     if (track != null) {
-                        Log.d("MainActivity", track.name + " by " + track.artist.name);
                         if(songsLoaded < NUM_SONGS) {
                             getSongAt(songsLoaded);
                             songsLoaded++;
@@ -298,33 +295,53 @@ public class MainActivity extends AppCompatActivity {
                             "the music discovery app! " + songLink);
                     sendIntent.setType("text/plain");
                     Intent.createChooser(sendIntent,"Share via...");
-                    Log.d("MainActivity", getLikedSongAt(0).songTitle);
                     startActivity(sendIntent);
                 });
     }
 
-    public SongModel getLikedSongAt(int pos) {
+    public SongModel[] getAllLikedSongs() {
+        SongModel[] songs = new SongModel[numLikedSongs()];
         Cursor cursor = dbrefR.query("LikedSongs", null, null, null, null, null , null);
         int i = 0;
-        while(cursor.moveToNext()) {
-            if (i == pos) {
-                return new SongModel(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
-            }
+        while (cursor.moveToNext()) {
+            songs[i] = new SongModel(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+            i++;
         }
-        return new SongModel("", "");
+        return songs;
     }
 
-    private int numLikedSongs = 0;
+    public boolean hasLikedSong(String songURL) {
+        Cursor cursor = dbrefR.query("LikedSongs", null, "songURL=\"" + songURL + "\"", null, null, null , null);
+        while (cursor.moveToNext()) {
+            return true;
+        }
+        return false;
+    }
+
+    public int numLikedSongs() {
+        Cursor cursor = dbrefR.query("LikedSongs", null, null, null, null, null , null);
+        int i = 0;
+        while (cursor.moveToNext()) {
+            i++;
+        }
+        return i;
+    }
+
     public void likeSong(View view) {
         mSpotifyAppRemote.getPlayerApi().getPlayerState()
                 .setResultCallback(playerState -> {
                     Track track = playerState.track;
-                    dbrefW.execSQL("INSERT INTO LikedSongs " +
-                            "(id, songName, songArtist, songAlbum, songURL, songAlbumURI)" +
-                            "VALUES (" + numLikedSongs + ",\"" + track.name + "\",\"" + track.artist.name
-                            + "\",\"" + track.album.name + "\",\"" + track.uri + "\",\"" + track.imageUri.raw + "\")"
-                    );
-                    numLikedSongs++;
+                    if (hasLikedSong(track.uri)) {
+                        //Unlike - remove song from DB
+                        dbrefW.execSQL("DELETE FROM LikedSongs WHERE songURL=\"" + track.uri + "\"");
+                    } else {
+                        //Like - add song to DB
+                        dbrefW.execSQL("INSERT INTO LikedSongs " +
+                                "(songName, songArtist, songAlbum, songURL, songAlbumURI)" +
+                                "VALUES (\"" + track.name + "\",\"" + track.artist.name
+                                + "\",\"" + track.album.name + "\",\"" + track.uri + "\",\"" + track.imageUri.raw + "\")"
+                        );
+                    }
                 });
     }
 }
