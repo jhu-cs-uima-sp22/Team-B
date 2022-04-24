@@ -10,11 +10,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.example.disco.adapter.ViewPager2Adapter;
 import com.example.disco.model.SongModel;
@@ -22,20 +22,18 @@ import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
-import com.spotify.protocol.client.CallResult;
-import com.spotify.protocol.client.Result;
-import com.spotify.protocol.client.Subscription;
-import com.spotify.protocol.types.PlayerState;
+import com.spotify.protocol.types.ListItem;
 import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     // this is the swiping class
     private ViewPager2 viewPager2;
     private ViewPager2Adapter vp2a;
+    private Spinner spinner;
     private boolean isPaused = false;
     private boolean playlistStarted = false;
 
@@ -48,15 +46,91 @@ public class MainActivity extends AppCompatActivity {
     private static final String REDIRECT_URI = "com.example.disco://callback";
     //Can't get authorization to work, which has to do with my dashboard and these 2 lines
     //but I cannot figure out how to get it to work
-    private static final String PLAYLIST_URI = "spotify:playlist:37i9dQZF1DX2sUQwD7tbmL";
+
+    // Initial PlayList will be the "Recently Played Music" Playlist
+    private static String PLAYLIST_URI = "spotify:playlist:37i9dQZF1DWW2mn5wEfG6q";
     private static final int NUM_SONGS = 10;
 
-    private SpotifyAppRemote mSpotifyAppRemote;
+    private static SpotifyAppRemote mSpotifyAppRemote;
+    private static ListItem[] recommendedContent;
+    public static List<String> spotifyGenres = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        connectSpotify();
+    }
+
+    private void connectSpotify() {
+        ConnectionParams connectionParams =
+                new ConnectionParams.Builder(CLIENT_ID)
+                        .setRedirectUri(REDIRECT_URI)
+                        .showAuthView(true)
+                        .build();
+
+        SpotifyAppRemote.connect(this, connectionParams,new Connector.ConnectionListener() {
+            public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                mSpotifyAppRemote = spotifyAppRemote;
+
+                //  Get the recommended content from Spotify
+                getRecommendedContent();
+            }
+
+            public void onFailure(Throwable throwable) {
+                // Something went wrong when attempting to connect! Handle errors here
+            }
+        });
+    }
+
+    /**
+     * Fetch all recommended Content from Spotify
+     */
+    private void getRecommendedContent() {
+        mSpotifyAppRemote.getContentApi().getRecommendedContentItems("")
+                .setResultCallback(list -> {
+                    recommendedContent = list.items;
+                    for(ListItem elem: list.items){
+                        spotifyGenres.add(elem.title);
+                    }
+
+                    // Only set up the view when the information is fetched
+                    setUpSpinner();
+                    setUpViewPage();
+
+                    // Now you can start interacting with App Remote
+                    connected();
+                });
+    }
+
+    /**
+     * Configure and Fill the dropDown Menu with all possible genres
+     */
+    private void setUpSpinner(){
+        spinner = findViewById(R.id.spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, MainActivity.spotifyGenres);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String genre = adapterView.getItemAtPosition(i).toString();
+                getMusicGenre(genre);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    /**
+     * Set up the viewPage
+     */
+    private void setUpViewPage() {
         viewPager2 = findViewById(R.id.viewpager);
         ViewPager2Adapter viewPager2Adapter = new ViewPager2Adapter(this);
         vp2a = viewPager2Adapter;
@@ -86,29 +160,36 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        ConnectionParams connectionParams =
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build();
+    private void connected() {
+        // Subscribe to PlayerState
+        mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+                    final Track track = playerState.track;
+                    if (track != null) {
+                        Log.d("MainActivity", track.name + " by " + track.artist.name);
+                    }
+                });
 
-        SpotifyAppRemote.connect(this, connectionParams,new Connector.ConnectionListener() {
-            public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                mSpotifyAppRemote = spotifyAppRemote;
+        //  After connecting to spotify, Get the songs in playlist
+        getAllSongs();
 
-                // Now you can start interacting with App Remote
-                connected();
-
-            }
-
-            public void onFailure(Throwable throwable) {
-                // Something went wrong when attempting to connect! Handle errors here
-            }
-        });
+        playlistStarted = true;
     }
+
+    /**
+     * Fetch all songs in the playlist PLAYLIST_URI
+     */
+    private void getAllSongs() {
+        // Play a playlist
+        mSpotifyAppRemote.getPlayerApi().play(PLAYLIST_URI);
+
+        vp2a.clearSongs();
+        for (int i = 0; i < NUM_SONGS; i++) {
+            getSongAt(i);
+        }
+    }
+
 
     @Override
     protected void onStop() {
@@ -149,23 +230,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void connected() {
-        // Play a playlist
-        mSpotifyAppRemote.getPlayerApi().play(PLAYLIST_URI);
 
-        // Subscribe to PlayerState
-        mSpotifyAppRemote.getPlayerApi()
-                .subscribeToPlayerState()
-                .setEventCallback(playerState -> {
-                    final Track track = playerState.track;
-                    if (track != null) {
-                        Log.d("MainActivity", track.name + " by " + track.artist.name);
-                    }
-                });
-        for (int i = 0; i < NUM_SONGS; i++) {
-            getSongAt(i);
+    /**
+     * Fetch the playlist for the specific genre
+     * @param genre Music genre from Spotify
+     */
+    private void getMusicGenre(String genre) {
+        ListItem itemSelected = null;
+
+        for (ListItem elem : recommendedContent) {
+            //  Get the item selected by user
+            if (elem.title.equals(genre)) {
+                itemSelected = elem;
+                break;
+            }
         }
-        playlistStarted = true;
+
+        //  Fetch the playlist URI
+        mSpotifyAppRemote.getContentApi().getChildrenOfItem(itemSelected, 1, 0)
+            .setResultCallback(e -> {
+                PLAYLIST_URI = e.items[0].uri;
+                getAllSongs();
+            });
     }
 
     /**
