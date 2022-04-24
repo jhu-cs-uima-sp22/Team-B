@@ -7,6 +7,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -16,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.example.disco.adapter.SongDBAdapter;
 import com.example.disco.adapter.ViewPager2Adapter;
 import com.example.disco.model.SongModel;
 import com.spotify.android.appremote.api.ConnectionParams;
@@ -34,8 +37,11 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 viewPager2;
     private ViewPager2Adapter vp2a;
     private Spinner spinner;
+    private SQLiteDatabase dbrefW;
+    private SQLiteDatabase dbrefR;
     private boolean isPaused = false;
     private boolean playlistStarted = false;
+    private int songsLoaded = 0;
 
 
     //TODO: these 2 lines are specific to the thing you create on your dashboard
@@ -59,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        SongDBAdapter sdba = new SongDBAdapter(this);
+        dbrefW = sdba.getWritableDatabase();
+        dbrefR = sdba.getReadableDatabase();
 
         connectSpotify();
     }
@@ -138,16 +148,15 @@ public class MainActivity extends AppCompatActivity {
         viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                Log.d("MainActivity", "WHAT IS HAPPENING");
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
 
             @Override
             public void onPageSelected(int position) {
+                Log.d("MainActivity", "PAGE SELECTED!");
                 super.onPageSelected(position);
                 if (playlistStarted) {
-                    if (vp2a.getItemCount() < NUM_SONGS) {
-                        //getNextSong();
-                    }
                     mSpotifyAppRemote.getPlayerApi().skipToIndex(PLAYLIST_URI, position);
                     isPaused = false;
                 }
@@ -168,6 +177,10 @@ public class MainActivity extends AppCompatActivity {
                     final Track track = playerState.track;
                     if (track != null) {
                         Log.d("MainActivity", track.name + " by " + track.artist.name);
+                        if(songsLoaded < NUM_SONGS) {
+                            getSongAt(songsLoaded);
+                            songsLoaded++;
+                        }
                     }
                 });
 
@@ -225,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                 .setResultCallback(empty -> {
                     getCurrentSong(pos);
                 });
-        if (pos == NUM_SONGS - 1) {
+        if (pos == NUM_SONGS - 2) {
             mSpotifyAppRemote.getPlayerApi().skipToIndex(PLAYLIST_URI, 0);
         }
     }
@@ -274,7 +287,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void shareClicked(View view) {
         mSpotifyAppRemote.getPlayerApi().getPlayerState()
@@ -282,11 +294,37 @@ public class MainActivity extends AppCompatActivity {
                    String songLink = "open.spotify.com/track/" + playerState.track.uri.substring(14);
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, songLink);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out this cool song I found on Disco, " +
+                            "the music discovery app! " + songLink);
                     sendIntent.setType("text/plain");
                     Intent.createChooser(sendIntent,"Share via...");
+                    Log.d("MainActivity", getLikedSongAt(0).songTitle);
                     startActivity(sendIntent);
                 });
     }
 
+    public SongModel getLikedSongAt(int pos) {
+        Cursor cursor = dbrefR.query("LikedSongs", null, null, null, null, null , null);
+        int i = 0;
+        while(cursor.moveToNext()) {
+            if (i == pos) {
+                return new SongModel(cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+            }
+        }
+        return new SongModel("", "");
+    }
+
+    private int numLikedSongs = 0;
+    public void likeSong(View view) {
+        mSpotifyAppRemote.getPlayerApi().getPlayerState()
+                .setResultCallback(playerState -> {
+                    Track track = playerState.track;
+                    dbrefW.execSQL("INSERT INTO LikedSongs " +
+                            "(id, songName, songArtist, songAlbum, songURL, songAlbumURI)" +
+                            "VALUES (" + numLikedSongs + ",\"" + track.name + "\",\"" + track.artist.name
+                            + "\",\"" + track.album.name + "\",\"" + track.uri + "\",\"" + track.imageUri.raw + "\")"
+                    );
+                    numLikedSongs++;
+                });
+    }
 }
