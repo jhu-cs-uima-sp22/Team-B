@@ -21,7 +21,7 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
     private SongModel[] songs;
     private Context ctx;
     private int numSongs;
-    private final int NUM_SONGS = 10;
+    private final int NUM_SONGS = 13;
 
     
     public ViewPager2Adapter(Context ctx) {

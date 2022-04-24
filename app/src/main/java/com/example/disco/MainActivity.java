@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private SQLiteDatabase dbrefR;
     private boolean isPaused = false;
     private boolean playlistStarted = false;
+    private int songsLoaded = 0;
 
 
     //TODO: these 2 lines are specific to the thing you create on your dashboard
@@ -72,11 +73,13 @@ public class MainActivity extends AppCompatActivity {
         viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                Log.d("MainActivity", "WHAT IS HAPPENING");
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
 
             @Override
             public void onPageSelected(int position) {
+                Log.d("MainActivity", "PAGE SELECTED!");
                 super.onPageSelected(position);
                 if (playlistStarted) {
                     mSpotifyAppRemote.getPlayerApi().skipToIndex(PLAYLIST_URI, position);
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 .setResultCallback(empty -> {
                     getCurrentSong(pos);
                 });
-        if (pos == NUM_SONGS - 1) {
+        if (pos == NUM_SONGS - 2) {
             mSpotifyAppRemote.getPlayerApi().skipToIndex(PLAYLIST_URI, 0);
         }
     }
@@ -164,12 +167,13 @@ public class MainActivity extends AppCompatActivity {
                 .setEventCallback(playerState -> {
                     final Track track = playerState.track;
                     if (track != null) {
-                        //Log.d("MainActivity", track.name + " by " + track.artist.name);
+                        Log.d("MainActivity", "CONNECTED: " + track.name + " by " + track.artist.name);
+                        if(songsLoaded < NUM_SONGS) {
+                            getSongAt(songsLoaded);
+                            songsLoaded++;
+                        }
                     }
                 });
-        for (int i = 0; i < NUM_SONGS; i++) {
-            getSongAt(i);
-        }
         playlistStarted = true;
     }
 
@@ -193,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void shareClicked(View view) {
         mSpotifyAppRemote.getPlayerApi().getPlayerState()
@@ -208,6 +211,10 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("MainActivity", getLikedSongAt(0).songTitle);
                     startActivity(sendIntent);
                 });
+    }
+
+    public void createFeed() {
+        dbrefW.execSQL("CREATE TABLE Feed (SongID varchar(255), )");
     }
 
     public SongModel getLikedSongAt(int pos) {
