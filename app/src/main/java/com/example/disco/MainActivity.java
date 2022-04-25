@@ -215,11 +215,11 @@ public class MainActivity extends AppCompatActivity {
     private void getCurrentSong(int pos) {
         mSpotifyAppRemote.getPlayerApi().getPlayerState()
                 .setResultCallback(playerState -> {
-                        mSpotifyAppRemote.getImagesApi().getImage(playerState.track.imageUri)
-                                .setResultCallback(img -> {
-                                    vp2a.addSong(new SongModel(playerState.track, img), pos);
-                                    viewPager2.setAdapter(vp2a);
-                                });
+                            mSpotifyAppRemote.getImagesApi().getImage(playerState.track.imageUri)
+                                    .setResultCallback(img -> {
+                                        vp2a.addSong(new SongModel(playerState.track, img), pos);
+                                        viewPager2.setAdapter(vp2a);
+                                    });
                 })
                 .setErrorCallback(throwable -> {
                     Log.e("MainActivity", throwable.getMessage());
@@ -332,9 +332,11 @@ public class MainActivity extends AppCompatActivity {
         mSpotifyAppRemote.getPlayerApi().getPlayerState()
                 .setResultCallback(playerState -> {
                     Track track = playerState.track;
+                    Context context = getApplicationContext();
                     if (hasLikedSong(track.uri)) {
                         //Unlike - remove song from DB
                         dbrefW.execSQL("DELETE FROM LikedSongs WHERE songURL=\"" + track.uri + "\"");
+                        view.setBackground(ContextCompat.getDrawable(context, R.drawable.heart_outline));
                         Toast.makeText(this, "Removed from your liked songs.", Toast.LENGTH_SHORT).show();
                     } else {
                         //Like - add song to DB
@@ -343,6 +345,7 @@ public class MainActivity extends AppCompatActivity {
                                 "VALUES (\"" + track.name + "\",\"" + track.artist.name
                                 + "\",\"" + track.album.name + "\",\"" + track.uri + "\",\"" + track.imageUri.raw + "\")"
                         );
+                        view.setBackground(ContextCompat.getDrawable(context, R.drawable.heart_filled));
                         Toast.makeText(this, "Added to your liked songs!", Toast.LENGTH_SHORT).show();
                     }
                 });
