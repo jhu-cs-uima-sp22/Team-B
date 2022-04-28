@@ -21,7 +21,7 @@
         android:id="@+id/coverImage"
         android:layout_width="320dp"
         android:layout_height="320dp"
-        android:background="#9C27B0"
+        android:background="#FFBB86FC"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,6 +112,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:onClick="infoPopup"
             android:background="@drawable/round_button"
             android:foreground="@drawable/info" />
 

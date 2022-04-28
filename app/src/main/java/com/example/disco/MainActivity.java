@@ -1,11 +1,13 @@
 package com.example.disco;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,6 +28,7 @@ import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
+import com.spotify.protocol.types.Artist;
 import com.spotify.protocol.types.ListItem;
 import com.spotify.protocol.types.Track;
 
@@ -348,6 +351,36 @@ public class MainActivity extends AppCompatActivity {
                         view.setBackground(ContextCompat.getDrawable(context, R.drawable.heart_filled));
                         Toast.makeText(this, "Added to your liked songs!", Toast.LENGTH_SHORT).show();
                     }
+                });
+    }
+
+
+    public void infoPopup(View view) {
+        mSpotifyAppRemote.getPlayerApi().getPlayerState()
+                .setResultCallback(playerState -> {
+                    String title = playerState.track.name;
+                    String link = "open.spotify.com/track/" + playerState.track.uri.substring(14);
+                    String album = playerState.track.album.name;
+                    List<Artist> allArtists = playerState.track.artists;
+                    String artists = "";
+                    for (int i = 0; i < allArtists.toArray().length; i++) {
+                        artists += allArtists.get(i).name + ", ";
+                    }
+                    if (allArtists.toArray().length > 0) {
+                        artists = artists.substring(0, artists.length() - 2);
+                    }
+                    String message = "Song: " + title + "\nArtists: " + artists + "\nAlbum: " + album + "\n\n\nLink:\n" + link;
+
+
+
+                    AlertDialog.Builder dialog=new AlertDialog.Builder(this);
+                    dialog.setTitle("Information");
+                    dialog.setMessage(message);
+
+
+                    AlertDialog alertDialog=dialog.create();
+                    alertDialog.show();
+
                 });
     }
 }
