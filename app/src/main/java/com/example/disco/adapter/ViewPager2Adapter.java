@@ -30,11 +30,19 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
         this.numSongs = 0;
     }
 
+    /**
+     * Add a new song to our adapter
+     * @param song Song Information
+     * @param pos  Position of the song in the array
+     */
     public void addSong(SongModel song, int pos) {
         songs[pos] = song;
         numSongs++;
     }
 
+    /**
+     * Delete all songs from the adapter
+     */
     public void clearSongs() {
         this.songs = new SongModel[NUM_SONGS];
         this.numSongs = 0;
@@ -65,10 +73,11 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        //ImageView images;
+
         TextView title;
         TextView artist;
         ImageView albumArt;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.songTitle);
@@ -77,6 +86,7 @@ public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.Vi
             artist.setSelected(true);
             albumArt = itemView.findViewById(R.id.coverImage);
         }
+
     }
 
 }
